@@ -20,16 +20,8 @@ generate_index_css() {
 }
 
 ensure_bash_4() {
-    if [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
-        if [ -x "/opt/homebrew/bin/bash" ]; then
-            exec /opt/homebrew/bin/bash "$0" "$@"
-        elif [ -x "/usr/local/bin/bash" ]; then
-            exec /usr/local/bin/bash "$0" "$@"
-        else
-            echo "Bash 4 or higher is required."
-            exit 1
-        fi
-    fi
+    # No longer required - scripts are compatible with Bash 3
+    :
 }
 
 remove_all_css_imports() {
@@ -50,7 +42,9 @@ remove_all_css_imports() {
 
 compile() {
     tsc -p tsconfig.$1.json --outdir ./dist/$1-tmp --declarationDir ./dist/dts-tmp
-    linaria -r dist/$1-tmp/ -m esnext -o dist/$1-tmp/ dist/$1-tmp/**/*.js -t -i dist/$1-tmp -c ../../config/linaria.json > /dev/null
+    # Use find instead of globstar (Bash 3 compatible)
+    JS_FILES=$(find dist/$1-tmp -name "*.js" -type f | tr '\n' ' ')
+    linaria -r dist/$1-tmp/ -m esnext -o dist/$1-tmp/ $JS_FILES -t -i dist/$1-tmp -c ../../config/linaria.json > /dev/null
     remove_all_css_imports dist/$1-tmp
 
     # replace dist/$1 (if it exists) with dist/$1-tmp

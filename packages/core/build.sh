@@ -2,9 +2,7 @@
 set -em
 source ../../config/build-util.sh
 
-ensure_bash_4
-
-shopt -s globstar
+# No longer requires Bash 4 - compatible with Bash 3
 
 echo -e "\033[0;36m🏗️ Building Glide Data Grid 🏗️\033[0m"
 
